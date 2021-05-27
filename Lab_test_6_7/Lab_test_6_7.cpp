@@ -12,9 +12,12 @@ namespace Labtest67
 		
 		TEST_METHOD(TestMethod1)
 		{
-			int a[6] = {-3, 4, 12, -5, 2, 3 };
-			int elem = Search_End(&a[0], &a[6], &a[0]);
-			Assert::AreEqual(elem, 3);
+			int a[14] = { -4, 1, 5, -1, 2, 3, -4, 9, -7, -6, -1, 2, 3, -4 };
+			int a2[4] = { -1, 2, 3, -4 };
+
+			int* found = Search_End(&a[0], &a[14], &a2[0], &a2[4]);
+			int i = Index(&a[0], &a[14], found);
+			Assert::AreEqual(i, 10);
 		}
 	};
 }

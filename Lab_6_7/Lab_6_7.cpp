@@ -50,50 +50,159 @@ public:
 	}
 };
 
-template <class T>
-T Search_End(T* begin, T* end, T* elem)
+template<class T>
+T* Search_End(T* begin, T* end, T* begin2, T* end2)
 {
+	T* from = begin;
+	T* from2 = begin2;
+	T* found = end;
 	for (T* from = begin; from < end; from++) 
-	{ 
-		if (from == end - 1)
+	{
+		if (*from == *from2)
 		{
-			elem = from;
+			from2++; 
+		}
+		else
+		{
+			from2 = begin2;
+		}
+		if (*from2 == *(end2 - 1))
+		{
+			found = from - 2;
+			from2 = begin2;
 		}
 	}
-	return *elem;
+	return found;
 }
 
-template <class T>
-T Search_End_If(T* begin, T* end, T* elem, Predicate<T>& p)
+template<class T>
+T* Search_End_If(T* begin, T* end, T* begin2, T* end2, Predicate<T>& p)
 {
+	T* from = begin;
+	T* from2 = begin2;
+	T* found = end;
 	for (T* from = begin; from < end; from++)
 	{
 		if (p(*from))
-			elem = from;
+		{
+			if (*from == *from2)
+			{
+				from2++;
+			}
+			else
+			{
+				from2 = begin2;
+			}
+			if (*(from + 1) != *(end2 - 1))
+			{
+				from2 = begin2;
+			}
+			if (*from2 == *(end2 - 1))
+			{
+				found = from;
+				from2 = begin2;
+			}
+		}
 	}
-	return *elem;
+	return found;
+}
+
+void Print(int* v, const int size)
+{
+	cout << "Array = { ";
+	for (int i = 0; i < size; i++)
+		cout << v[i] << ' ';
+	cout << "}" << endl;
+}
+
+template<class T>
+int Index(T* begin, T* end, int* found)
+{
+	int c = 0;
+	T* from = begin;
+	for (T* from = begin; from < end; from++)
+	{
+		if (from == found)
+		{
+			break;
+		}
+		c++;
+	}
+	return c;
 }
 
 int main()
 {
-	int a[10] = { 3, -2, 0, 4, -5, -2, 3, 8, -2, -5 };
+	const int n = 14;
+	int a[n] = {-4, 1, 5, -1, 2, 3, -4, 9, -7, -6, -1, 2, 3, -4};
+	Print(a, n);
 
-	cout << "a = { ";
-	for (int i = 0; i < 10; i++)
-		cout << a[i] << ' '; 
-	cout << "}" << endl;
+	const int k = 4;
+	int a2[k] = { -1, 2, 3, -4 };
+	Print(a2, k);
 
-	cout << "Last element: " << Search_End(&a[0], &a[10], &a[0]) << endl;
+	const int p = 16;
+	int a3[p] = { -1, 3, 2, -4, 2, 3, 2, -4, -1, -4, 2, 3, -1, -4, -1, 3 };
+	Print(a3, p);
 
-	Predicate<int>* neg = new Negative<int>(); 
-	cout << "Last negative element: " << Search_End_If(&a[0], &a[10], &a[0], *neg) << endl;
+	const int l = 2;
+	int b[l] = { 2, 3 };
+	int c[l] = { -1, -4 };
+	int d[l] = { 2, -4 };
+	int e[l] = { -1, 3 };
 
-	Predicate<int>* pos = new Positive<int>();
-	cout << "Last positive element: " << Search_End_If(&a[0], &a[10], &a[0], *pos) << endl;
+	int* begin = &a[0];
+	int* end = &a[n];
+	int* begin2 = &a2[0];
+	int* end2 = &a2[k];
+	int* begin3 = &a3[0];
+	int* end3 = &a3[p];
+	int* begB = &b[0];
+	int* endB = &b[l];
+	int* begC = &c[0];
+	int* endC = &c[l];
+	int* begD = &d[0];
+	int* endD = &d[l];
+	int* begE = &e[0];
+	int* endE = &e[l];
 
-	Predicate<int>* odd = new Odd<int>();
-	cout << "Last odd element: " << Search_End_If(&a[0], &a[10], &a[0], *odd) << endl;
+	int* found = Search_End(begin, end, begin2, end2);
+
+	if (found == end)
+		cout << "Sequence a2 not found" << endl;
+	else
+		cout << "Last occurrence of a sequence a2 in a1 found at position: " << Index(begin, end, found) << endl;
+
+	Predicate<int>* pos = new Positive<int>(); 
+	int* FoundPositive = Search_End_If(begin3, end3, begB, endB, *pos);
+
+	if (FoundPositive == end3)
+		cout << "Sequence a2 not found" << endl;
+	else
+		cout << "Last occurrence of a sequence a2 in a1 found at position(Positive): " << Index(begin, end, FoundPositive) << endl;
+
+	Predicate<int>* neg = new Negative<int>();
+	int* FoundNegative = Search_End_If(begin3, end3, begC, endC, *neg);
+
+	if (FoundNegative == end3)
+		cout << "Sequence a2 not found" << endl;
+	else
+		cout << "Last occurrence of a sequence a2 in a1 found at position(Negative): " << Index(begin3, end3, FoundNegative) << endl;
 
 	Predicate<int>* even = new Even<int>();
-	cout << "Last even element: " << Search_End_If(&a[0], &a[10], &a[0], *even) << endl;
+	int* FounEven = Search_End_If(begin3, end3, begD, endD, *even);
+
+	if (FounEven == end3)
+		cout << "Sequence a2 not found" << endl;
+	else
+		cout << "Last occurrence of a sequence a2 in a1 found at position(Even): " << Index(begin3, end3, FounEven) << endl;
+
+	Predicate<int>* odd = new Odd<int>();
+	int* FoundOdd = Search_End_If(begin3, end3, begE, endE, *odd);
+
+	if (FoundOdd == end3)
+		cout << "Sequence a2 not found" << endl;
+	else
+		cout << "Last occurrence of a sequence a2 in a1 found at position(0dd): " << Index(begin3, end3, FoundOdd) << endl;
+
 }
